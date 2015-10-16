@@ -1,0 +1,2 @@
+# wastebook
+indieweb publishing, etc. 
