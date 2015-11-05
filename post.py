@@ -27,6 +27,8 @@ TEMPLATE_POST = {
    
 }
 
+import copy
+import datetime
 import re
 import string
 import unicodedata
@@ -59,3 +61,45 @@ def slugify(txt):
 
    return slug
 
+class Post(object):
+   def __init__(self, data=None):
+      if data is None:
+         data = {}
+      # The post/page data is held in a separate dict, not the object's 
+      # main __dict__   
+      self._data = data
+
+      # A dict mapping post elements with special-case methods
+      # to update their value (e.g., making sure that titles and slugs
+      # are always updated together)
+      self._setExceptions = {}
+
+   def AddSetException(self, key, handler):
+      self._setExceptions[key] = handler
+
+   def __getattr__(self, name):
+      if not name.startswith("_"):
+         return self._data[name]
+
+   def __setattr__(self, name, value):
+      if name.startswith("_"):
+         self.__dict__[name] = value
+      else:
+         if name in self._setExceptions.keys():
+            # call the special-case code:
+            self._setExceptions[name](name, value)
+         else:
+            self._data[name] = value
+
+   @classmethod
+   def Create(cls):
+      data = copy.deepcopy(TEMPLATE_POST)
+      retval = cls(data)
+      retval.type = retval.__class__.__name__
+      retval.created = datetime.datetime.now()
+      return retval
+
+
+
+class Page(Post):
+   pass

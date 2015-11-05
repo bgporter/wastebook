@@ -32,3 +32,22 @@ class TestSlugify(unittest.TestCase):
    def test_unicode(self):
       ''' Unicode converted to acceptable IRI format? '''
       self.assertEqual("m%C3%BCller", post.slugify(u"M\u00fcller"))
+
+
+class TestPostBasic(unittest.TestCase):
+   def setUp(self):
+      pass
+
+
+   def test_creation(self):
+      ''' make sure that we can create post and pages and that they know what
+         their type really is.
+      '''
+      p = post.Post.Create()
+      self.assertEqual(p.type, "Post")
+      self.assertEqual(p.public, True)
+
+      p = post.Page.Create()
+      self.assertEqual(p.type, "Page")
+
+
