@@ -50,4 +50,16 @@ class TestPostBasic(unittest.TestCase):
       p = post.Page.Create()
       self.assertEqual(p.type, "Page")
 
+   def test_setTitle(self):
+      ''' verify that we can set the title and set the slug at the same time.'''
+      p = post.Post.Create()
+      p.title = "This is a Title Test"
+      self.assertEqual(p.title, "This is a Title Test")
+      self.assertEqual(p.slug, 'this-is-a-title-test')
+
+      p = post.Post.Create()
+      p.title = " THIS SHOULD BE STRIPPED  "
+      self.assertEqual(p.title, 'THIS SHOULD BE STRIPPED')
+      self.assertEqual(p.slug, 'this-should-be-stripped')
+
 

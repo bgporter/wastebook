@@ -73,6 +73,7 @@ class Post(object):
       # to update their value (e.g., making sure that titles and slugs
       # are always updated together)
       self._setExceptions = {}
+      self.AddSetException('title', self.SetTitle)
 
    def AddSetException(self, key, handler):
       self._setExceptions[key] = handler
@@ -98,6 +99,20 @@ class Post(object):
       retval.type = retval.__class__.__name__
       retval.created = datetime.datetime.now()
       return retval
+
+
+   def SetTitle(self, key, title):
+      ''' update the title and also generate the slug for this post/page. '''
+      # We don't want leading/trailing whitespace -- get rid of it
+      title = title.strip()
+      self._data[key] = title
+      newSlug = slugify(title)
+      if self.slug and newSlug != self.slug:
+         # !!! handle the need for a new redirect object in the database to connect
+         # the old slug/URL to the new location.
+         pass
+      self._data['slug'] = newSlug
+
 
 
 
