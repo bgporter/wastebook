@@ -38,10 +38,10 @@ CONDENSE_SPACE = re.compile(r"\s+")
 def slugify(txt):
    ''' convert the input title text into a format that's usable in a URL:
       - all lowercase
-      - leading/trailing spaces stripped away.
+      - any punctuation characters removed (well, replaced with a space)
       - multiple spaces condensed to single spaces
+      - leading/trailing spaces stripped away.
       - spaces converted to dashes
-      - any punctuation characters removed
       - unicode converted to UTF-8, any non-ASCII chars percent encoded
    '''
    slug = txt.lower()
