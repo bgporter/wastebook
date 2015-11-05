@@ -7,11 +7,11 @@
 - Publication date
 - Modification date
 - Author
-- Public/private
-- Tags (list)
+- Public/private (bool? multi-value state?)
+- Tags (list, extracted from text; anything that's _#tagname_)
 - Title
-- Slug (generated from title, used as friendly URL, not manually editable)
-- Image file
+- Slug (generated from title, used as friendly URL, not manually editable, must be unique per-user.)
+- Image file (if present, packaged with post in e.g. RSS. A post can have any number of embedded image files...)
 - Text (do we maintain a list for versioning?, If so, we also need a current version value.)
 - Summary/synopsis (short tl;dr version that might be used e.g. in RSS/twitter when available)
 - ViewCount
@@ -29,6 +29,8 @@ I think that #2 sounds more like a solution that I like.
 Another problem here is that this design requires that each post in the system have a unique title...or at least a unique slug. Perhaps that's as easy as 
 1. Before each time saving a post for the first time (or when changing title and generating a new slug/URL), we look in the database for any posts that can be gotten to by the regex starting with that slug and ending with (optional) trailing dash and digits. 
 2. If we find one or more posts that have the same slug-pattern, we create the next higher number and use that as the slug value.
+
+How do we handle drafts? If we use a list of versions of text with a separate index pointing at the current live version, it's easy to have separate save draft and publish/update controls. 
 
 
 
@@ -68,7 +70,7 @@ Just a flat table that saves
 - Referer
 - Timestamp
 - IP address?
-- ??
+- search string?
 
 
 ### Config 
@@ -91,6 +93,12 @@ Just a flat table that saves
 
 **/upload** (GET/POST) form to upload images (etc.) We should have some sort of image resizing capability as part of the upload process.
 
+**/recent** -- return a list of the last _n_ posts sorted by time. 
+
+
+**/preview/page/<pageId>** -- if you're logged in, view the latest draft of the specified page.
+
+**/preview/post/<postId>** -- if you're logged in, view the latest draft of the specified post.
 
 ## Plugins/Processors
 
