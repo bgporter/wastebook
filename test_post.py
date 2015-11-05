@@ -62,4 +62,23 @@ class TestPostBasic(unittest.TestCase):
       self.assertEqual(p.title, 'THIS SHOULD BE STRIPPED')
       self.assertEqual(p.slug, 'this-should-be-stripped')
 
+      # !!! need to test that when we change the slug that we create a 
+      # record in the database that lets redirection work correctly. !!!
+      
+      # a case where we have a new title that doesn't need a redirection. 
+      p.title = 'this should be stripped' 
+      self.assertEqual(p.title, 'this should be stripped')
+      self.assertEqual(p.slug, 'this-should-be-stripped')
+      self.assertEqual(p._redirectFrom, None)
+
+
+       
+      
+      p.title = "This should be strapped"
+      self.assertEqual(p.slug, 'this-should-be-strapped')
+      self.assertEqual(p._redirectFrom, "this-should-be-stripped")
+      
+
+
+
 

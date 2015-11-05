@@ -110,8 +110,10 @@ class Post(object):
       if self.slug and newSlug != self.slug:
          # !!! handle the need for a new redirect object in the database to connect
          # the old slug/URL to the new location.
-         pass
-      self._data['slug'] = newSlug
+         # When we save, we need to test for this _redirectFrom attribute and if it's 
+         # present, create a new record in the database. 
+         self._redirectFrom = self.slug
+      self.slug = newSlug
 
 
 
