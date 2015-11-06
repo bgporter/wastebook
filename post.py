@@ -5,26 +5,25 @@
 '''
 
 TEMPLATE_POST = {
+   ## Metadata
+   "created":          None,    # datetime, only settable once.
    "published":        None,    # datetime
    "modified":         None,    # datetime
+   "rendered":         None,    # datetime when the renderedText was generated
    "author":           "",      # string
    "public":           True,    # bool
-   "tags":             [],      # list of strings
-   "title":            "",      # string
+   "viewCount":        0,       # int
    "slug":             "",      # string, generated from the title
+   "status":           "draft", # string, one of 'draft', 'published', 'deleted'
+
+   ## Content
+   "title":            "",      # string
    "image":            "",      # string, name of an image file
+   "summary":          "",      # string, short description of contents
    "draft":            "",      # string, draft text not yet published
    "text":             "",      # text as last published
-   "summary":          "",      # string, short description of contents
-   "viewCount":        0,       # int
-   "status":           "draft", # string, one of 'draft', 'published', 'deleted'
    "renderedText":     "",      # string, HTML rendered version of text. 
-   "rendered":         None,    # datetime when the renderedText was generated
-   # optional fields, only present when we need to change the URL of an
-   # already published post":
-   "redirectUrl":      "",      # if present, where to redirect the user
-   "redirectCode":     None     # if present, HTTP error code (probably 301)
-   
+   "tags":             [],      # list of strings
 }
 
 import copy
@@ -33,6 +32,8 @@ import re
 import string
 import unicodedata
 import urllib
+
+from bson.objectid import ObjectId
 
 REPLACE_PUNCTUATION = re.compile(r"[{}]".format(string.punctuation))
 CONDENSE_SPACE = re.compile(r"\s+")
@@ -74,6 +75,7 @@ class Post(object):
       # are always updated together)
       self._setExceptions = {}
       self.AddSetException('title', self.SetTitle)
+      self.AddSetException('created', self.SetCreated)
 
    def AddSetException(self, key, handler):
       self._setExceptions[key] = handler
@@ -101,6 +103,76 @@ class Post(object):
       return retval
 
 
+   @classmethod
+   def Load(cls, postDb, slugOrId):
+      # create a disposable object so we can get the typename
+      o = cls({})
+      theType = o.__class__.__name__
+
+      thePost = None
+      # if we're being passed an object ID, it will be a 24-char long string
+      # that is a hex value.
+      if 24 == len(slugOrId):
+         try:
+            int(slugOrId, 16)
+            # if we get here, we didn't throw an error. 
+            thePost = postDb.find_one({"_id": ObjectId(slugOrId)})
+         except ValueError:
+            pass
+      if thePost is None:
+         searchDict = {
+            "type" : theType,
+            "slug":  slugOrId
+         }
+         thePost = postDb.find_one(searchDict)
+
+      retval = None
+      if thePost:
+         retval = cls(thePost)
+
+      return retval
+
+
+   def Save(self, postDb):
+      ''' store this post into the database. '''
+      # if the slug has changed, we need to filter on the *old* slug, not
+      # the new one that we'll be replacing!
+      
+      redirectDict = None
+      if self._redirectFrom:
+         searchSlug = self._redirectFrom
+         redirectDict = {
+            "type":     self.type,
+            "slug":     self._redirectFrom,
+            "location": self.slug,
+            "created":  datetime.datetime.now(),
+            "code":     301
+         }
+
+      else:
+         searchSlug = self.slug
+
+      filterDict = {
+         "type":     self.type,
+         "slug":     searchSlug,
+         "created":  self.created
+      }
+
+      self.modified = datetime.datetime.now()
+
+      result = postDb.replace_one(filterDict, self._data, upsert=True)
+
+      if redirectDict is not None:
+         # create a new record so someone trying to access the old post/page
+         result2 = postDb.insert_one(redirectDict)
+
+      return str(result.upserted_id)
+
+
+
+
+
+
    def SetTitle(self, key, title):
       ''' update the title and also generate the slug for this post/page. '''
       # We don't want leading/trailing whitespace -- get rid of it
@@ -114,6 +186,16 @@ class Post(object):
          # present, create a new record in the database. 
          self._redirectFrom = self.slug
       self.slug = newSlug
+
+   def SetCreated(self, key, timestamp):
+      ''' The timestamp of creation can only be set once, when we actually
+         do create the post object for the first time. We don't raise anything
+         if someone tries to change our create date, we just ignore it. 
+      '''
+      if self._data['created'] is None:
+         self._data['created'] = timestamp
+
+
 
 
 

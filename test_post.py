@@ -4,6 +4,21 @@ import unittest
 
 import post
 
+from pymongo import MongoClient
+
+
+db = None
+
+def setUpModule():
+   global db
+   client = MongoClient("zappa")
+   db = client['wastebook_test']
+
+def testDownModule():
+   db.posts.drop()
+
+
+
 class TestSlugify(unittest.TestCase):
    def setUp(self):
       pass
@@ -71,14 +86,48 @@ class TestPostBasic(unittest.TestCase):
       self.assertEqual(p.slug, 'this-should-be-stripped')
       self.assertEqual(p._redirectFrom, None)
 
-
-       
       
       p.title = "This should be strapped"
       self.assertEqual(p.slug, 'this-should-be-strapped')
       self.assertEqual(p._redirectFrom, "this-should-be-stripped")
+
+      page = post.Page.Create()
+      page.title = "My First Page?"
+      self.assertEqual("my-first-page", page.slug)
       
+class TestPostDatabase(unittest.TestCase):
+   def setUp(self):
+      pass
 
+   def test_savePost(self):
+      p = post.Post.Create()
+      p.title = "Initial Save Test"
+      p.author = "bgporter"
+      p.summary = "a test"
+      p.text = "This should be longer."
+      p.Save(db.posts)
 
+      r = db.posts.find_one({"slug": "initial-save-test", "type": "Post"})
+      p2 = post.Post(r)
+      self.assertEqual(p.title, p2.title)
+      self.assertEqual(p.author, p2.author)
+      self.assertEqual(p.summary, p2.summary)
+      self.assertEqual(p.text, p2.text)
 
+   def test_saveAndLoadPost(self):
+      p = post.Page.Create()
+      p.title = "Can We Reload This?"
+      p.author = "David Foster Wallace"
+      p.text = "No individual moment by itself"
 
+      postId = p.Save(db.posts)
+
+      p2 = post.Page.Load(db.posts, 'can-we-reload-this')
+      self.assertEqual(p.title, p2.title)
+      self.assertEqual(p.author, p2.author)
+      self.assertEqual(p.text, p2.text)
+
+      p3 = post.Page.Load(db.posts, postId)
+      self.assertEqual(p.title, p3.title)
+      self.assertEqual(p.author, p3.author)
+      self.assertEqual(p.text, p3.text)
