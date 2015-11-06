@@ -131,3 +131,28 @@ class TestPostDatabase(unittest.TestCase):
       self.assertEqual(p.title, p3.title)
       self.assertEqual(p.author, p3.author)
       self.assertEqual(p.text, p3.text)
+
+      p2 = post.Post.Load(db.posts, 'can-we-reload-this')
+      self.assertEqual(p2, None)
+
+
+   def test_titleChangeRedirect(self):
+      p = post.Post.Create()
+      p.title = "Original Title"
+      p.text = "This is the text of the post."
+
+      postId = p.Save(db.posts)
+
+      p.title = "A Second Title"
+      postId2 = p.Save(db.posts)
+
+      #self.assertEqual(postId, postId2)
+
+      p3 = post.Post.Load(db.posts, "original-title")
+      self.assertEqual(301, p3.code)
+      self.assertEqual(p3.location, 'a-second-title')
+
+      p4 = post.Post.Load(db.posts, p3.location)
+      self.assertEqual(p4.title, p.title)
+      self.assertEqual(p4.text, p.text)
+

@@ -64,6 +64,19 @@ def slugify(txt):
 
 class Post(object):
    def __init__(self, data=None):
+      '''
+         The Post object -- note that Pages and Posts are structurally identical
+         (at least to start out with), and differ only in their type name, which is 
+         also used to separate them in the database. 
+
+         When we create a Post/Page, we initialize it with a dict that is either 
+         a copy of the template post (above) or has been fetched from the database.
+
+         We use a getattr/setattr hack here: actual member variables are always
+         prefixed with an underscore, and the values that need to go into the 
+         database are not underscore-prefixed. 
+
+      '''
       if data is None:
          data = {}
       # The post/page data is held in a separate dict, not the object's 
@@ -78,6 +91,13 @@ class Post(object):
       self.AddSetException('created', self.SetCreated)
 
    def AddSetException(self, key, handler):
+      ''' some attributes need extra logic applied to them before sticking them
+         into the _data dict. If we weren't using the setattr hack that we are, 
+         we could just use properties for this. Instead, we provide this hook into the
+         guts of that hack and give ourself a way to insert that logic. (e.g., 
+         the 'created' timestamp is write-once. We use a SetException to 
+         enforce that.)
+      '''
       self._setExceptions[key] = handler
 
    def __getattr__(self, name):
@@ -105,6 +125,11 @@ class Post(object):
 
    @classmethod
    def Load(cls, postDb, slugOrId):
+      '''
+         Retrieve a single page or post from the database, using either its
+         slug or objectId as the key. Returns a Post/Page object on success, 
+         None if not found.
+      '''
       # create a disposable object so we can get the typename
       o = cls({})
       theType = o.__class__.__name__
@@ -166,6 +191,9 @@ class Post(object):
          # create a new record so someone trying to access the old post/page
          result2 = postDb.insert_one(redirectDict)
 
+      # if we just upserted a new entry, we'll return a string version of the 
+      # new record's ID. If this already was in the database, we already know its
+      # object id.
       return str(result.upserted_id)
 
 
