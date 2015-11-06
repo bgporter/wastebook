@@ -49,6 +49,26 @@ class TestSlugify(unittest.TestCase):
       self.assertEqual("m%C3%BCller", post.slugify(u"M\u00fcller"))
 
 
+
+class TestTags(unittest.TestCase):
+   def setUp(self):
+      pass
+
+   def test_tagExtraction(self):
+      tags = post.ExtractTags("First test")
+      self.assertEqual(tags, [])
+      tags = post.ExtractTags("#initial tag")
+      self.assertEqual(tags, ['initial'])
+      tags = post.ExtractTags("#")
+      self.assertEqual(tags, [])
+
+      tags = post.ExtractTags("Should be a #thing")
+      self.assertEqual(tags, ['thing'])
+      tags = post.ExtractTags("Should be a no#thing")
+      self.assertEqual(tags, [])
+
+
+
 class TestPostBasic(unittest.TestCase):
    def setUp(self):
       pass
@@ -155,4 +175,15 @@ class TestPostDatabase(unittest.TestCase):
       p4 = post.Post.Load(db.posts, p3.location)
       self.assertEqual(p4.title, p.title)
       self.assertEqual(p4.text, p.text)
+
+   def test_ExtractAndSaveTags(self):
+      p = post.Post.Create()
+      p.title = "This Has Tags"
+      p.text = "Here is some text with #tags #inside"
+
+      postId = p.Save(db.posts)
+
+      p2 = post.Post.Load(db.posts, 'this-has-tags')
+      self.assertEqual(p2.tags, ['inside', 'tags'])
+
 

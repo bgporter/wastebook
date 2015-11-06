@@ -38,6 +38,9 @@ from bson.objectid import ObjectId
 REPLACE_PUNCTUATION = re.compile(r"[{}]".format(string.punctuation))
 CONDENSE_SPACE = re.compile(r"\s+")
 
+
+RightNow = datetime.datetime.now
+
 def slugify(txt):
    ''' convert the input title text into a format that's usable in a URL:
       - all lowercase
@@ -61,6 +64,18 @@ def slugify(txt):
    slug = urllib.quote(slug)
 
    return slug
+
+
+def ExtractTags(txt):
+   ''' given input text, look for #tag instances in it, and return a list 
+      of those tags without the leading '#'. If there are no tags, we return
+      an empty list.
+   '''
+
+   TAG_PATTERN = re.compile(r'(?:^|\s)#(\w+)', re.M)
+   tagList = TAG_PATTERN.findall(txt)
+
+   return sorted(list(set(tagList)))
 
 class Post(object):
    def __init__(self, data=None):
@@ -89,6 +104,7 @@ class Post(object):
       self._setExceptions = {}
       self.AddSetException('title', self.SetTitle)
       self.AddSetException('created', self.SetCreated)
+      self.AddSetException('text', self.SetText)
 
    def AddSetException(self, key, handler):
       ''' some attributes need extra logic applied to them before sticking them
@@ -119,7 +135,7 @@ class Post(object):
       data = copy.deepcopy(TEMPLATE_POST)
       retval = cls(data)
       retval.type = retval.__class__.__name__
-      retval.created = datetime.datetime.now()
+      retval.created = RightNow()
       return retval
 
 
@@ -170,8 +186,8 @@ class Post(object):
             "type":     self.type,
             "slug":     self._redirectFrom,
             "location": self.slug,
-            "created":  datetime.datetime.now(),
-            "code":     301
+            "created":  RightNow(),
+            "code":     301,
          }
 
       else:
@@ -183,7 +199,9 @@ class Post(object):
          "created":  self.created
       }
 
-      self.modified = datetime.datetime.now()
+      # no -- we're only modified if the text changes (or is that right?) We're
+      # using modified to act as a flag that we need to re-render the HTML output.
+      #self.modified = datetime.datetime.now()
 
       result = postDb.replace_one(filterDict, self._data, upsert=True)
 
@@ -222,6 +240,15 @@ class Post(object):
       '''
       if self._data['created'] is None:
          self._data['created'] = timestamp
+
+   def SetText(self, key, newText):
+      ''' update our text. If it's different than it was before, also set 
+         the 'modified' timestamp as well.
+      '''
+      if self.text != newText:
+         self._data['text'] = newText
+         self.tags = ExtractTags(newText)
+         self.modified = RightNow()
 
 
 
