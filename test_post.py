@@ -66,10 +66,16 @@ class TestTags(unittest.TestCase):
       tags = post.ExtractTags("#")
       self.assertEqual(tags, [])
 
+      # make sure that tags are converted to lowercase.
       tags = post.ExtractTags("Should be a #THING")
       self.assertEqual(tags, ['thing'])
       tags = post.ExtractTags("Should be a no#thing")
       self.assertEqual(tags, [])
+
+      # internal dashes should be okay.
+      tags = post.ExtractTags("Should be a #Dashed-Thing")
+      self.assertEqual(tags, ['dashed-thing'])
+      
 
 
 

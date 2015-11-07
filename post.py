@@ -77,7 +77,7 @@ def ExtractTags(txt):
       - sort the tags alphabetically
    '''
 
-   TAG_PATTERN = re.compile(r'(?:^|\s)#(\w+)', re.M)
+   TAG_PATTERN = re.compile(r'(?:^|\s)#([a-zA-Z0-9][a-zA-Z0-9_-]*)', re.M)
    tagList = TAG_PATTERN.findall(txt)
 
    return sorted(list(set([t.lower() for t in tagList])))
