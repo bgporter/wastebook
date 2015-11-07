@@ -110,6 +110,9 @@ class Post(object):
       self.AddSetException('title', self.SetTitle)
       self.AddSetException('created', self.SetCreated)
       self.AddSetException('text', self.SetText)
+      self.AddSetException('published', self.SetDate)
+      self.AddSetException('modified', self.SetDate)
+      self.AddSetException('rendered', self.SetDate)
 
    def AddSetException(self, key, handler):
       ''' some attributes need extra logic applied to them before sticking them
@@ -270,6 +273,13 @@ class Post(object):
          self._data['text'] = newText
          self.tags = ExtractTags(newText)
          self.modified = RightNow()
+
+   def SetDate(self, key, timestamp):
+      ''' It doesn't make sense for any of the date/time stamps to be
+         before our created timestamp. Ensure that it's not possible to 
+         have e.g., modified < created. 
+      '''
+      self._data[key] = max(timestamp, self.created)
 
 
 
