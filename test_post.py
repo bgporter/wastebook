@@ -66,7 +66,7 @@ class TestTags(unittest.TestCase):
       tags = post.ExtractTags("#")
       self.assertEqual(tags, [])
 
-      tags = post.ExtractTags("Should be a #thing")
+      tags = post.ExtractTags("Should be a #THING")
       self.assertEqual(tags, ['thing'])
       tags = post.ExtractTags("Should be a no#thing")
       self.assertEqual(tags, [])
@@ -217,3 +217,15 @@ class TestSearch(unittest.TestCase):
       cur = post.Post.Search(db.posts, {"author": "bgporter"})
       self.assertEqual(2, cur.count())
 
+      cur = post.Post.Search(db.posts, {"author": "bgporter", "public": True})
+      self.assertEqual(1, cur.count())
+
+      cur = post.Post.Search(db.posts, {"author": "tslothrop"})
+      self.assertEqual(1, cur.count())
+
+   def test_SearchSort(self):
+      cur = post.Post.Search(db.posts, {"public": True})
+      self.assertEqual(2, cur.count())
+      posts = list(cur)
+      self.assertEqual(posts[0]['published'], datetime(2015, 10, 3))
+      self.assertEqual(posts[1]['published'], datetime(2015, 10, 1))

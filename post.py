@@ -80,7 +80,7 @@ def ExtractTags(txt):
    TAG_PATTERN = re.compile(r'(?:^|\s)#(\w+)', re.M)
    tagList = TAG_PATTERN.findall(txt)
 
-   return sorted(list(set(tagList)))
+   return sorted(list(set([t.lower() for t in tagList])))
 
 class Post(object):
    def __init__(self, data=None):
