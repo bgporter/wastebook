@@ -102,6 +102,7 @@ class Post(object):
       # The post/page data is held in a separate dict, not the object's 
       # main __dict__   
       self._data = copy.deepcopy(data)
+      self._slugChanged = False
 
       # A dict mapping post elements with special-case methods
       # to update their value (e.g., making sure that titles and slugs
@@ -227,9 +228,24 @@ class Post(object):
          "created":  self.created
       }
 
-      # no -- we're only modified if the text changes (or is that right?) We're
-      # using modified to act as a flag that we need to re-render the HTML output.
-      #self.modified = datetime.datetime.now()
+      if self._slugChanged:
+         # there can only be one post or page with a particular slug. 
+         # Before we save, we need to make sure we're not trying to re-use 
+         # an existing slug.
+         
+         if postDb.find_one({"type": self.type, "slug": self.slug}):
+            # there's already a post at this address. Let's figure out what to do.
+            pattern = re.compile("{0}-\d+".format(self.slug))
+            cursor = postDb.find({"type": self.type, "slug": pattern},
+               projection={"slug": True})
+            lastNum = 0
+            for p in cursor:
+               # split the string on the rightmost dash to extract the number at the end
+               base, num = p['slug'].rsplit('-', 1)
+               lastNum = max(lastNum, int(num))
+
+            self.slug = "{0}-{1}".format(self.slug, lastNum+1)
+            self._slugChanged = False
 
       result = postDb.replace_one(filterDict, self._data, upsert=True)
 
@@ -249,13 +265,16 @@ class Post(object):
       title = title.strip()
       self._data[key] = title
       newSlug = slugify(title)
-      if self.slug and newSlug != self.slug:
-         # !!! handle the need for a new redirect object in the database to connect
-         # the old slug/URL to the new location.
-         # When we save, we need to test for this _redirectFrom attribute and if it's 
-         # present, create a new record in the database. 
-         self._redirectFrom = self.slug
-      self.slug = newSlug
+      if newSlug != self.slug:
+         if self.slug:
+            # !!! handle the need for a new redirect object in the database to connect
+            # the old slug/URL to the new location.
+            # When we save, we need to test for this _redirectFrom attribute and if it's 
+            # present, create a new record in the database. 
+            self._redirectFrom = self.slug
+
+         self.slug = newSlug
+         self._slugChanged = True
 
    def SetCreated(self, key, timestamp):
       ''' The timestamp of creation can only be set once, when we actually

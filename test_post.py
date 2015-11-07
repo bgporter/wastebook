@@ -202,6 +202,33 @@ class TestPostDatabase(unittest.TestCase):
       p2.text = "No more tags."
       self.assertEqual(p2.tags, [])
 
+   def test_SlugCollision(self):
+      ''' create multiple posts that should have the same slug, verify 
+         that we start adding a dash and incrementing numbers to 
+         prevent dupes.
+      '''
+      p = post.Post.Create()
+      p.title = "Duplicate Slug"
+
+      p.Save(db.posts)
+      self.assertEqual(p.slug, "duplicate-slug")
+
+      p2 = post.Post.Create()
+      p2.title = "Duplicate Slug"
+      p2.text = "This is the second post."
+      p2.Save(db.posts)
+      self.assertEqual(p2.slug, "duplicate-slug-1")
+
+      p3 = post.Post.Create()
+      p3.title = "Duplicate Slug"
+      p3.text = "This is the third post."
+      p3.Save(db.posts)
+      self.assertEqual(p3.slug, "duplicate-slug-2")
+
+      p2FromDb = post.Post.Load(db.posts, 'duplicate-slug-1')
+      self.assertEqual("This is the second post.", p2FromDb.text)
+
+
 class TestSearch(unittest.TestCase):
    searchPosts = []
    @classmethod
