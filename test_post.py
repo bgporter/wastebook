@@ -204,7 +204,9 @@ class TestSearch(unittest.TestCase):
          p = post.Post(dct)
          # make sure that slug, tags, etc. are set correctly.
          p.title = dct['title']
+         p.text = ""
          p.text = dct['text']
+         print p.title, ": ", p.tags
          postId = p.Save(db.posts)
          cls.searchPosts.append(postId)
 
@@ -229,3 +231,15 @@ class TestSearch(unittest.TestCase):
       posts = list(cur)
       self.assertEqual(posts[0]['published'], datetime(2015, 10, 3))
       self.assertEqual(posts[1]['published'], datetime(2015, 10, 1))
+
+
+   def testSearchTags(self):
+      cur = post.Post.Search(db.posts, {"tags" : "foo"})
+      self.assertEqual(2, cur.count())
+      cur = post.Post.Search(db.posts, {"tags" : "bar"})
+      self.assertEqual(2, cur.count())
+      cur = post.Post.Search(db.posts, {"tags" : "BAR"})
+      self.assertEqual(0, cur.count())
+
+      cur = post.Post.Search(db.posts, {"public": True, "tags" : "foo"})
+      self.assertEqual(1, cur.count())

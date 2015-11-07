@@ -101,7 +101,7 @@ class Post(object):
          data = {}
       # The post/page data is held in a separate dict, not the object's 
       # main __dict__   
-      self._data = data
+      self._data = copy.deepcopy(data)
 
       # A dict mapping post elements with special-case methods
       # to update their value (e.g., making sure that titles and slugs
@@ -137,8 +137,8 @@ class Post(object):
 
    @classmethod
    def Create(cls):
-      data = copy.deepcopy(TEMPLATE_POST)
-      retval = cls(data)
+      #data = copy.deepcopy(TEMPLATE_POST)
+      retval = cls(TEMPLATE_POST)
       retval.type = retval.__class__.__name__
       retval.created = RightNow()
       return retval
