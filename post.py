@@ -71,6 +71,7 @@ def ExtractTags(txt):
    ''' given input text, look for #tag instances in it, and return a list 
       of those tags without the leading '#'. If there are no tags, we return
       an empty list.
+      Tags must start with an alphanumeric, and can contain dashes and underscores.
 
       Before returning the list, we:
       - remove dupes
@@ -108,9 +109,12 @@ class Post(object):
       # to update their value (e.g., making sure that titles and slugs
       # are always updated together)
       self._setExceptions = {}
+      # setting the title also sets the slug
       self.AddSetException('title', self.SetTitle)
-      self.AddSetException('created', self.SetCreated)
+      # when we set new text, we extract tags from the body.
       self.AddSetException('text', self.SetText)
+      # timestamps are funny.
+      self.AddSetException('created', self.SetCreated)
       self.AddSetException('published', self.SetDate)
       self.AddSetException('modified', self.SetDate)
       self.AddSetException('rendered', self.SetDate)
@@ -141,7 +145,6 @@ class Post(object):
 
    @classmethod
    def Create(cls):
-      #data = copy.deepcopy(TEMPLATE_POST)
       retval = cls(TEMPLATE_POST)
       retval.type = retval.__class__.__name__
       retval.created = RightNow()
