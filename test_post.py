@@ -119,6 +119,14 @@ class TestPostBasic(unittest.TestCase):
       page.title = "My First Page?"
       self.assertEqual("my-first-page", page.slug)
       
+   def test_dateLogic(self):
+      p = post.Post(SEARCH_TEST_DATA[0])
+      p.published = datetime(2014, 1, 1)
+      self.assertEqual(p.published, p.created)
+      p.published = datetime(2016, 1, 1)
+      self.assertEqual(datetime(2016, 1, 1), p.published)
+
+
 class TestPostDatabase(unittest.TestCase):
    def setUp(self):
       pass
@@ -243,3 +251,4 @@ class TestSearch(unittest.TestCase):
 
       cur = post.Post.Search(db.posts, {"public": True, "tags" : "foo"})
       self.assertEqual(1, cur.count())
+
