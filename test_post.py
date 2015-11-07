@@ -6,6 +6,10 @@ import post
 
 from pymongo import MongoClient
 
+import pymongo
+
+from testData.postTestData import *
+
 
 db = None
 
@@ -186,4 +190,30 @@ class TestPostDatabase(unittest.TestCase):
       p2 = post.Post.Load(db.posts, 'this-has-tags')
       self.assertEqual(p2.tags, ['inside', 'tags'])
 
+      # clear tags
+      p2.text = "No more tags."
+      self.assertEqual(p2.tags, [])
+
+class TestSearch(unittest.TestCase):
+   searchPosts = []
+   @classmethod
+   def setUpClass(cls):
+      # make sure the db is empty.
+      db.posts.drop()
+      for dct in SEARCH_TEST_DATA:
+         p = post.Post(dct)
+         # make sure that slug, tags, etc. are set correctly.
+         p.title = dct['title']
+         p.text = dct['text']
+         postId = p.Save(db.posts)
+         cls.searchPosts.append(postId)
+
+   @classmethod
+   def tearDownClass(cls):
+      # clean out anything that we created.
+      db.posts.drop()
+
+   def test_SearchAuthor(self):
+      cur = post.Post.Search(db.posts, {"author": "bgporter"})
+      self.assertEqual(2, cur.count())
 

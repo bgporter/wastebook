@@ -28,6 +28,7 @@ TEMPLATE_POST = {
 
 import copy
 import datetime
+import pymongo
 import re
 import string
 import unicodedata
@@ -70,6 +71,10 @@ def ExtractTags(txt):
    ''' given input text, look for #tag instances in it, and return a list 
       of those tags without the leading '#'. If there are no tags, we return
       an empty list.
+
+      Before returning the list, we:
+      - remove dupes
+      - sort the tags alphabetically
    '''
 
    TAG_PATTERN = re.compile(r'(?:^|\s)#(\w+)', re.M)
@@ -138,6 +143,12 @@ class Post(object):
       retval.created = RightNow()
       return retval
 
+   @classmethod
+   def TypeName(cls):
+      ''' return the name of the class that's being invoked here. '''
+      # create a disposable object so we can get the typename
+      o = cls({})
+      return o.__class__.__name__
 
    @classmethod
    def Load(cls, postDb, slugOrId):
@@ -146,9 +157,7 @@ class Post(object):
          slug or objectId as the key. Returns a Post/Page object on success, 
          None if not found.
       '''
-      # create a disposable object so we can get the typename
-      o = cls({})
-      theType = o.__class__.__name__
+      theType = cls.TypeName()
 
       thePost = None
       # if we're being passed an object ID, it will be a 24-char long string
@@ -172,6 +181,22 @@ class Post(object):
          retval = cls(thePost)
 
       return retval
+
+
+   @classmethod
+   def Search(cls, postDb, filter, skip=0, limit=0, sort=None):
+      # create a disposable object so we can get the typename
+      typeName = cls.TypeName()
+
+      filter['type'] = typeName
+
+      if sort is None:
+         # by default, we sort in reverse order on date published.
+         sort = [("published", pymongo.DESCENDING)]
+
+      return postDb.find(filter, None, skip, limit, sort=sort)
+
+
 
 
    def Save(self, postDb):
@@ -213,10 +238,6 @@ class Post(object):
       # new record's ID. If this already was in the database, we already know its
       # object id.
       return str(result.upserted_id)
-
-
-
-
 
 
    def SetTitle(self, key, title):
