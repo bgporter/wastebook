@@ -13,40 +13,78 @@ import datetime
 # a datetime of our choice.
 RightNow = datetime.datetime.now
 
-def controlVisibility(theUser):
-   '''
-      Build part of a Mongo search filter that (depending on the value of 
-      theUser) either requests things that are public OR gets public things as well
-      as anything private to the logged-in user. 
-   '''
-
-   retval = {}
-   if theUser.is_authenticated:
-      retval = { 
-         "$or": [
-               {"public": True}, 
-               {"public": False, "author": theUser.userId}
-            ]
-         }
-
-   else:
-      retval = {"public" : True}
-
-   return retval
 
 
-def getPublishedPosts(db, theUser, perPage, pageNum=0):
-   ''' get a page worth of post objects, respecting the visibility of things
-      that should be there for the current user.
-   '''
+class PostController(object):
+   dataType = post.Post
 
-   filterDict = controlVisibility(theUser)
-   # only get posts that have been published.
-   filterDict['status'] = "published"
-   # and have a publication date that's less than right now.
-   filterDict['published'] = {"$lte": RightNow()}
+   def __init__(self, user):
+      self.filterDict = {}
+      # after we run a query, this will be either True or False.
+      self.moreResults = None
+      self.skip = 0
+      self.limit = 0
+      self.sort = None
 
-   posts = post.Post.Search(db, filterDict, pageNum*perPage, perPage)
 
-   return posts
+      self.SetUser(user)
+
+
+   def SetUser(self, user):
+      visibility = {}
+      if user.is_authenticated:
+         visibility = { 
+            "$or": [
+                  {"public": True}, 
+                  {"public": False, "author": user.userId}
+               ]
+            }
+      else:
+         visibility = {"public" : True}      
+
+      self.filterDict.update(visibility)
+
+   def SetPagination(self, pageNum, perPage):
+      self.skip = pageNum * perPage
+      self.limit = perPage
+
+   def SetFilterAttribute(self, attr, value):
+      self.filterDict[attr] = value
+
+
+   def SetSort(self, sortDict):
+      ''' the default sort is reverse chron by publication date. You can 
+         replace that by passing in a dict in the format that PyMongo understands.
+      '''
+      self.sort = sortDict
+
+   def DateFilter(self, attribute, beforeDate, afterDate=None):
+      if afterDate:
+         pass
+      else:
+         self.filterDict[attribute] = {"$lte" : beforeDate}
+
+   def Search(self, db):
+      cur = self.dataType.Search(db, 
+         self.filterDict, 
+         self.skip, 
+         self.limit, 
+         self.sort)
+
+      allMatches = cur.count()
+      thisPageMatches = cur.count(True)
+
+      self.moreResults = False
+      if allMatches > (self.skip + thisPageMatches):
+         self.moreResults = True
+
+      return cur
+
+
+
+class PageController(PostController):
+   dataType = post.Page
+
+   pass
+
 

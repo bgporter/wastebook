@@ -55,23 +55,81 @@ class TestIndex(unittest.TestCase):
    def testOldPosts(self):
       controllers.RightNow = lambda: datetime(2016, 1, 1)
       user1 = FakeUser("", False)
-      cur = controllers.getPublishedPosts(db.posts, user1, 10)
+      c = controllers.PostController(user1)
+      c.DateFilter("published", datetime(2016, 1, 1))
+      c.SetPagination(0, 10)
+      c.SetFilterAttribute("status", "published")
+      cur = c.Search(db.posts)
+
       self.assertEqual(1, cur.count())
+      self.assertEqual(False, c.moreResults) 
+
 
       user2 = FakeUser('bgporter', True)
-      cur = controllers.getPublishedPosts(db.posts, user2, 10)
+      c = controllers.PostController(user2)
+      c.DateFilter("published", datetime(2016, 1, 1))
+      c.SetPagination(0, 10)
+      c.SetFilterAttribute("status", "published")
+
+      cur = c.Search(db.posts)
       self.assertEqual(2, cur.count())
+      self.assertEqual(False, c.moreResults) 
 
    def testFuturePosts(self):
       # posts with a publication date in the future can't be gotten.
-      controllers.RightNow = lambda: datetime(2015, 1, 1)
       user1 = FakeUser("", False)
-      cur = controllers.getPublishedPosts(db.posts, user1, 10)
+
+      c = controllers.PostController(user1)
+      c.DateFilter("published", datetime(2015, 1, 1))
+      c.SetPagination(0, 10)
+      c.SetFilterAttribute("status", "published")
+      cur = c.Search(db.posts)
+
       self.assertEqual(0, cur.count())
+      self.assertEqual(False, c.moreResults) 
+
 
       # ...even if we're the authenticated owner.
       user2 = FakeUser('bgporter', True)
-      cur = controllers.getPublishedPosts(db.posts, user2, 10)
+      c = controllers.PostController(user2)
+      c.DateFilter("published", datetime(2015, 1, 1))
+      c.SetPagination(0, 10)
+      c.SetFilterAttribute("status", "published")
+      cur = c.Search(db.posts)
+
       self.assertEqual(0, cur.count())
+      self.assertEqual(False, c.moreResults) 
 
 
+class TestPagination(unittest.TestCase):
+   @classmethod
+   def setUpClass(cls):
+      db.posts.drop()
+      CreatePosts(POST_DATA_2)
+
+   @classmethod
+   def tearDownClass(cls):
+      db.posts.drop()
+
+   def testMore(self):
+      user1 = FakeUser("", False)
+      c = controllers.PostController(user1)      
+      c.DateFilter("published", datetime(2016, 1, 1))
+      c.SetPagination(0, 5)
+      c.SetFilterAttribute("status", "published")
+      cur = c.Search(db.posts)
+
+      self.assertEqual(5, cur.count(True))
+      self.assertEqual(True, c.moreResults) 
+
+      c.SetPagination(1, 5)
+      cur = c.Search(db.posts)
+
+      self.assertEqual(5, cur.count(True))
+      self.assertEqual(True, c.moreResults) 
+
+      c.SetPagination(2, 5)
+      cur = c.Search(db.posts)
+
+      self.assertEqual(1, cur.count(True))
+      self.assertEqual(False, c.moreResults) 

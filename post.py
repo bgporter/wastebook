@@ -204,7 +204,7 @@ class Post(object):
          # by default, we sort in reverse order on date published.
          sort = [("published", pymongo.DESCENDING)]
 
-      return postDb.find(filter, None, skip, limit, sort=sort)
+      return postDb.find(filter, None, skip=skip, limit=limit, sort=sort)
 
 
 
