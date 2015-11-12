@@ -8,7 +8,8 @@ TEMPLATE_POST = {
    ## Metadata
    "created":          None,    # datetime, only settable once.
    "published":        None,    # datetime
-   "modified":         None,    # datetime
+   "modified":         None,    # datetime, last time any attribute changed
+   "edited":           None,    # datetime, last time text edited.
    "rendered":         None,    # datetime when the renderedText was generated
    "author":           "",      # string
    "public":           True,    # bool
@@ -18,6 +19,7 @@ TEMPLATE_POST = {
 
    ## Content
    "title":            "",      # string
+   "subhed":           "",      # string
    "image":            "",      # string, name of an image file
    "summary":          "",      # string, short description of contents
    "draft":            "",      # string, draft text not yet published
@@ -78,7 +80,7 @@ def ExtractTags(txt):
       - sort the tags alphabetically
    '''
 
-   TAG_PATTERN = re.compile(r'(?:^|\s)#([a-zA-Z0-9][a-zA-Z0-9_-]*)', re.M)
+   TAG_PATTERN = re.compile(r'(?:^|\s)#([a-zA-Z0-9][a-zA-Z0-9_-]*[a-zA-Z0-9])')
    tagList = TAG_PATTERN.findall(txt)
 
    return sorted(list(set([t.lower() for t in tagList])))
@@ -142,6 +144,7 @@ class Post(object):
             self._setExceptions[name](name, value)
          else:
             self._data[name] = value
+         self._data['modified'] = RightNow()
 
    @classmethod
    def Create(cls):
@@ -243,7 +246,8 @@ class Post(object):
                projection={"slug": True})
             lastNum = 0
             for p in cursor:
-               # split the string on the rightmost dash to extract the number at the end
+               # split the string on the rightmost dash to extract the number 
+               # at the end
                base, num = p['slug'].rsplit('-', 1)
                lastNum = max(lastNum, int(num))
 
@@ -294,7 +298,7 @@ class Post(object):
       if self.text != newText:
          self._data['text'] = newText
          self.tags = ExtractTags(newText)
-         self.modified = RightNow()
+         self.edited = RightNow()
 
    def SetDate(self, key, timestamp):
       ''' It doesn't make sense for any of the date/time stamps to be
@@ -309,4 +313,8 @@ class Post(object):
 
 
 class Page(Post):
+   ''' Pages and Posts are identical, except for the value of their 'type' 
+      value in the database. See the Post @classmethod Create() for how we 
+      handle this transparently.
+   '''
    pass

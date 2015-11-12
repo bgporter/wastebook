@@ -79,11 +79,22 @@ Just a flat table that saves
 
 **/** (index) -- displays first page of posts
 
-**/posts/<int:pageNum>** -- if no argument provided, identical to the index. Otherwise, attempts to display that page # of posts.
+**/posts/<int:pageNum>** -- if no argument provided, identical to the index. Otherwise, attempts to display that page # of posts. Number of pages per post will need to be a configuration option.
+
+**/pages/<int:pageNum>** -- display a page-worth of links to pages. 
+
+
+
 
 **/post/<postId>** -- display just the specified post. `postId` should be either the slug value of the post or the database ID. 
 
-**/tag/<tagName>** -- display pages/posts with the specified tag
+**/post/<postId>** -- display just the specified post. `postId` should be either the slug value of the post or the database ID. 
+
+
+**/page/<pageId>** -- display just the specified page. `pageId` should be either the slug value of the page or the database ID. 
+
+
+**/tag/<tagName>** -- display pages/posts with the specified tag. If there is a page that's also named `tagName`, display its contents before the list of tagged things.
 
 **/edit/post/<postId>** (GET/POST) Edit a post. If this is a brand new post that hasn't been published, we need to use the database ID. 
 
@@ -94,11 +105,11 @@ Just a flat table that saves
 **/upload** (GET/POST) form to upload images (etc.) We should have some sort of image resizing capability as part of the upload process.
 
 **/recent** -- return a list of the last _n_ posts sorted by time. 
+**/recent/<type>/<value>** -- return a list of the last _n_ posts sorted by time, specified by e.g., "/tag/foobar" or "/author/bgporter" 
 
 
-**/preview/page/<pageId>** -- if you're logged in, view the latest draft of the specified page.
+**/preview/<pageOrPost>/<pageId>** -- if you're logged in, view the latest draft of the specified post (or page). The `pageOrPost` path fragment should be either the literal word 'page' or 'post', else 401.
 
-**/preview/post/<postId>** -- if you're logged in, view the latest draft of the specified post.
 
 ## Plugins/Processors
 

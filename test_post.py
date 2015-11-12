@@ -2,6 +2,7 @@
 
 import unittest
 
+import config
 import post
 
 from pymongo import MongoClient
@@ -15,7 +16,7 @@ db = None
 
 def setUpModule():
    global db
-   client = MongoClient("zappa")
+   client = MongoClient(config.MONGO_IP)
    db = client['wastebook_test']
 
 def testDownModule():
@@ -75,6 +76,22 @@ class TestTags(unittest.TestCase):
       # internal dashes should be okay.
       tags = post.ExtractTags("Should be a #Dashed-Thing")
       self.assertEqual(tags, ['dashed-thing'])
+
+      #and also underscores
+      tags = post.ExtractTags("Should be a #Underscore_Thing")
+      self.assertEqual(tags, ['underscore_thing'])
+
+      # trailing dashes/underscores are ignored.
+      tags = post.ExtractTags("Should be a #Dashed-Thing-")
+      self.assertEqual(tags, ['dashed-thing'])
+      tags = post.ExtractTags("Should be a #Underscore_Thing_")
+      self.assertEqual(tags, ['underscore_thing'])
+
+      # 1st char must be alphanumeric:
+      tags = post.ExtractTags("Should be a #-Dashed-Thing")
+      self.assertEqual(tags, [])
+      
+      
       
 
 
@@ -236,7 +253,6 @@ class TestPostDatabase(unittest.TestCase):
 
 
 class TestSearch(unittest.TestCase):
-   searchPosts = []
    @classmethod
    def setUpClass(cls):
       # make sure the db is empty.
@@ -247,9 +263,7 @@ class TestSearch(unittest.TestCase):
          p.title = dct['title']
          p.text = ""
          p.text = dct['text']
-         print p.title, ": ", p.tags
          postId = p.Save(db.posts)
-         cls.searchPosts.append(postId)
 
    @classmethod
    def tearDownClass(cls):
