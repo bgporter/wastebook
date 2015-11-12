@@ -30,7 +30,19 @@ POST_DATA_1 = [
       "text":        "This is a #secret #post",
       "tags":        [],
       "type":        "Post"
-   }
+   },
+   {
+      "created" :    datetime(2015, 10, 2),
+      "published":   datetime(2015, 10, 2),
+      "author":      "bgporter",
+      "public":      False,
+      "status":      "draft",
+      "title":       "Third Post",
+      "slug":        "",
+      "text":        "This is a #draft #post",
+      "tags":        [],
+      "type":        "Post"
+   },
 
 
 ]

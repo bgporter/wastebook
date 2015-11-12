@@ -18,7 +18,7 @@ from pymongo import MongoClient
 
 class FakeUser(object):
    def __init__(self, userId, is_authenticated):
-      self.userID = userId
+      self.userId = userId
       self.is_authenticated = is_authenticated
 
 
@@ -52,14 +52,26 @@ class TestIndex(unittest.TestCase):
    def tearDownClass(cls):
       db.posts.drop()
 
-   def test_OldPosts(self):
-
+   def testOldPosts(self):
       controllers.RightNow = lambda: datetime(2016, 1, 1)
       user1 = FakeUser("", False)
-      cur = controllers.getPosts(db.posts, user1, 10)
+      cur = controllers.getPublishedPosts(db.posts, user1, 10)
       self.assertEqual(1, cur.count())
 
       user2 = FakeUser('bgporter', True)
-      cur = controllers.getPosts(db.posts, user1, 10)
-      self.assertEqual(1, cur.count())
+      cur = controllers.getPublishedPosts(db.posts, user2, 10)
+      self.assertEqual(2, cur.count())
+
+   def testFuturePosts(self):
+      # posts with a publication date in the future can't be gotten.
+      controllers.RightNow = lambda: datetime(2015, 1, 1)
+      user1 = FakeUser("", False)
+      cur = controllers.getPublishedPosts(db.posts, user1, 10)
+      self.assertEqual(0, cur.count())
+
+      # ...even if we're the authenticated owner.
+      user2 = FakeUser('bgporter', True)
+      cur = controllers.getPublishedPosts(db.posts, user2, 10)
+      self.assertEqual(0, cur.count())
+
 

@@ -35,7 +35,7 @@ def controlVisibility(theUser):
    return retval
 
 
-def getPosts(db, theUser, perPage, pageNum=0):
+def getPublishedPosts(db, theUser, perPage, pageNum=0):
    ''' get a page worth of post objects, respecting the visibility of things
       that should be there for the current user.
    '''
