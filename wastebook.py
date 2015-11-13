@@ -39,14 +39,17 @@ from flask import url_for
 
 from pymongo import MongoClient
 
-
 import flask_login
 from flask_login import login_required
 from flask_login import current_user
 
+
+import datetime
+
 # model code
 import post
 import user
+import controllers
 
 import config
 
@@ -57,13 +60,37 @@ app.config.from_object('config')
 
 # connect to the database
 db = MongoClient(config.MONGO_IP)
-posts = db[config.DATABASE][config.POSTS]
+postDb = db[config.DATABASE][config.POSTS]
+
+# get flask-login set up.
+loginManager = flask_login.LoginManager()
+loginManager.login_view = "login"
+loginManager.init_app(app)
+
+
+
+RightNow = datetime.datetime.now
+
+@loginManager.user_loader
+def loadUser(userId):
+   return user.loadUser(db, userId)
+
 
 @app.route("/")
 def index():
    ''' main index page showing posts. '''
-   return "Yo."
+   return posts(1)
 
+@app.route("/posts/<int:pageNum>/")
+def posts(pageNum=1):
+   c = controllers.PostController(current_user)
+   c.DateFilter("published", RightNow())
+   c.SetPagination(pageNum-1, config.POSTS_PER_PAGE)
+   c.SetFilterAttribute("status", "published")
+
+   cursor = c.Search(postDb)
+
+   return "\n".join(str(p) for p in cursor)
 
 if __name__ == "__main__":
    app.run()

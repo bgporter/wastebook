@@ -5,6 +5,7 @@
 
 import unittest
 from datetime import datetime
+from datetime import timedelta
 
 
 import config
@@ -33,20 +34,20 @@ def testDownModule():
    db.posts.drop()
 
 
-def CreatePosts(posts):
+def CreatePosts(postDb, posts):
    for dct in posts:
       p = post.Post(dct)
       # make sure that slug, tags, etc. are set correctly.
       p.title = dct['title']
       p.text = ""
       p.text = dct['text']
-      postId = p.Save(db.posts)
+      postId = p.Save(postDb)
 
 class TestIndex(unittest.TestCase):
    @classmethod
    def setUpClass(cls):
       db.posts.drop()
-      CreatePosts(POST_DATA_1)
+      CreatePosts(db.posts, POST_DATA_1)
 
    @classmethod
    def tearDownClass(cls):
@@ -105,7 +106,7 @@ class TestPagination(unittest.TestCase):
    @classmethod
    def setUpClass(cls):
       db.posts.drop()
-      CreatePosts(POST_DATA_2)
+      CreatePosts(db.posts, POST_DATA_2)
 
    @classmethod
    def tearDownClass(cls):
@@ -133,3 +134,31 @@ class TestPagination(unittest.TestCase):
 
       self.assertEqual(1, cur.count(True))
       self.assertEqual(False, c.moreResults) 
+
+class TestDateRange(unittest.TestCase):
+   @classmethod
+   def setUpClass(cls):
+      db.posts.drop()
+      CreatePosts(db.posts, POST_DATA_2)
+
+   @classmethod
+   def tearDownClass(cls):
+      db.posts.drop()
+
+
+   def MonthSearch(self, year, month):
+      user1 = FakeUser("", False)
+      c = controllers.PostController(user1)      
+      start = datetime(year, month, 1)
+      end = (start + timedelta(days=31)).replace(day=1)
+      c.DateFilter("published", end, start)
+      c.SetFilterAttribute("status", "published")
+
+      cur = c.Search(db.posts)
+      return cur.count()
+
+   def test_MonthRange(self):
+      self.assertEqual(1, self.MonthSearch(2015, 10))
+      self.assertEqual(3, self.MonthSearch(2015, 6))
+      self.assertEqual(2, self.MonthSearch(2015, 5))
+

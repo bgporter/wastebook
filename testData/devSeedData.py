@@ -47,8 +47,8 @@ POST_DATA_1 = [
 
 POST_DATA_2 = [
    {
-      "created" :    datetime(2015, 10, 2),
-      "published":   datetime(2015, 10, 2),
+      "created" :    datetime(2015, 3, 2),
+      "published":   datetime(2015, 3, 2),
       "author":      "bgporter",
       "public":      True,
       "status":      "published",
@@ -59,8 +59,8 @@ POST_DATA_2 = [
       "type":        "Post"
    },   
    {
-      "created" :    datetime(2015, 10, 2),
-      "published":   datetime(2015, 10, 2),
+      "created" :    datetime(2015, 4, 2),
+      "published":   datetime(2015, 4, 2),
       "author":      "bgporter",
       "public":      True,
       "status":      "published",
@@ -71,8 +71,8 @@ POST_DATA_2 = [
       "type":        "Post"
    }, 
    {
-      "created" :    datetime(2015, 10, 2),
-      "published":   datetime(2015, 10, 2),
+      "created" :    datetime(2015, 5, 2),
+      "published":   datetime(2015, 5, 2),
       "author":      "bgporter",
       "public":      True,
       "status":      "published",
@@ -83,8 +83,8 @@ POST_DATA_2 = [
       "type":        "Post"
    }, 
    {
-      "created" :    datetime(2015, 10, 2),
-      "published":   datetime(2015, 10, 2),
+      "created" :    datetime(2015, 5, 2),
+      "published":   datetime(2015, 5, 2),
       "author":      "bgporter",
       "public":      True,
       "status":      "published",
@@ -95,8 +95,8 @@ POST_DATA_2 = [
       "type":        "Post"
    }, 
    {
-      "created" :    datetime(2015, 10, 2),
-      "published":   datetime(2015, 10, 2),
+      "created" :    datetime(2015, 6, 2),
+      "published":   datetime(2015, 6, 2),
       "author":      "bgporter",
       "public":      True,
       "status":      "published",
@@ -107,8 +107,8 @@ POST_DATA_2 = [
       "type":        "Post"
    }, 
    {
-      "created" :    datetime(2015, 10, 2),
-      "published":   datetime(2015, 10, 2),
+      "created" :    datetime(2015, 6, 2),
+      "published":   datetime(2015, 6, 2),
       "author":      "bgporter",
       "public":      True,
       "status":      "published",
@@ -119,8 +119,8 @@ POST_DATA_2 = [
       "type":        "Post"
    }, 
    {
-      "created" :    datetime(2015, 10, 2),
-      "published":   datetime(2015, 10, 2),
+      "created" :    datetime(2015, 6, 2),
+      "published":   datetime(2015, 6, 2),
       "author":      "bgporter",
       "public":      True,
       "status":      "published",
@@ -131,8 +131,8 @@ POST_DATA_2 = [
       "type":        "Post"
    }, 
    {
-      "created" :    datetime(2015, 10, 2),
-      "published":   datetime(2015, 10, 2),
+      "created" :    datetime(2015, 7, 2),
+      "published":   datetime(2015, 7, 2),
       "author":      "bgporter",
       "public":      True,
       "status":      "published",
@@ -143,8 +143,8 @@ POST_DATA_2 = [
       "type":        "Post"
    }, 
    {
-      "created" :    datetime(2015, 10, 2),
-      "published":   datetime(2015, 10, 2),
+      "created" :    datetime(2015, 8, 2),
+      "published":   datetime(2015, 8, 2),
       "author":      "bgporter",
       "public":      True,
       "status":      "published",
@@ -155,8 +155,8 @@ POST_DATA_2 = [
       "type":        "Post"
    }, 
    {
-      "created" :    datetime(2015, 10, 2),
-      "published":   datetime(2015, 10, 2),
+      "created" :    datetime(2015, 9, 2),
+      "published":   datetime(2015, 9, 2),
       "author":      "bgporter",
       "public":      True,
       "status":      "published",
@@ -178,8 +178,4 @@ POST_DATA_2 = [
       "tags":        [],
       "type":        "Post"
    }, 
-
-
-
-
-   ]
+]

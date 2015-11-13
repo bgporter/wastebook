@@ -59,9 +59,9 @@ class PostController(object):
       self.sort = sortDict
 
    def DateFilter(self, attribute, beforeDate, afterDate=None):
-      dateDict = {"$lte" : beforeDate}
+      dateDict = {"$lt" : beforeDate}
       if afterDate:
-         dateDict['$gt'] = afterDate
+         dateDict['$gte'] = afterDate
       self.filterDict[attribute] = dateDict
 
    def Search(self, db):
