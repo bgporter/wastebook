@@ -101,6 +101,19 @@ class TestIndex(unittest.TestCase):
       self.assertEqual(0, cur.count())
       self.assertEqual(False, c.moreResults) 
 
+   def testSearchTags(self):
+      user1 = FakeUser("", False)
+
+      c = controllers.PostController(user1)
+      c.DateFilter("published", datetime(2016, 1, 1))
+      c.SetPagination(0, 10)
+      c.SetFilterAttribute("status", "published")
+      c.SetFilterAttribute("tags", "foo")
+
+      cur = c.Search(db.posts)
+
+      self.assertEqual(1, cur.count())      
+
 
 class TestPagination(unittest.TestCase):
    @classmethod
