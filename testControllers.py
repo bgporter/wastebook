@@ -58,8 +58,6 @@ class TestIndex(unittest.TestCase):
       user1 = FakeUser("", False)
       c = controllers.PostController(user1)
       c.DateFilter("published", datetime(2016, 1, 1))
-      c.SetPagination(0, 10)
-      c.SetFilterAttribute("status", "published")
       cur = c.Search(db.posts)
 
       self.assertEqual(1, cur.count())
@@ -69,8 +67,6 @@ class TestIndex(unittest.TestCase):
       user2 = FakeUser('bgporter', True)
       c = controllers.PostController(user2)
       c.DateFilter("published", datetime(2016, 1, 1))
-      c.SetPagination(0, 10)
-      c.SetFilterAttribute("status", "published")
 
       cur = c.Search(db.posts)
       self.assertEqual(2, cur.count())
@@ -82,8 +78,6 @@ class TestIndex(unittest.TestCase):
 
       c = controllers.PostController(user1)
       c.DateFilter("published", datetime(2015, 1, 1))
-      c.SetPagination(0, 10)
-      c.SetFilterAttribute("status", "published")
       cur = c.Search(db.posts)
 
       self.assertEqual(0, cur.count())
@@ -94,8 +88,6 @@ class TestIndex(unittest.TestCase):
       user2 = FakeUser('bgporter', True)
       c = controllers.PostController(user2)
       c.DateFilter("published", datetime(2015, 1, 1))
-      c.SetPagination(0, 10)
-      c.SetFilterAttribute("status", "published")
       cur = c.Search(db.posts)
 
       self.assertEqual(0, cur.count())
@@ -106,8 +98,6 @@ class TestIndex(unittest.TestCase):
 
       c = controllers.PostController(user1)
       c.DateFilter("published", datetime(2016, 1, 1))
-      c.SetPagination(0, 10)
-      c.SetFilterAttribute("status", "published")
       c.SetFilterAttribute("tags", "foo")
 
       cur = c.Search(db.posts)
@@ -130,7 +120,6 @@ class TestPagination(unittest.TestCase):
       c = controllers.PostController(user1)      
       c.DateFilter("published", datetime(2016, 1, 1))
       c.SetPagination(0, 5)
-      c.SetFilterAttribute("status", "published")
       cur = c.Search(db.posts)
 
       self.assertEqual(5, cur.count(True))
@@ -165,7 +154,6 @@ class TestDateRange(unittest.TestCase):
       start = datetime(year, month, 1)
       end = (start + timedelta(days=31)).replace(day=1)
       c.DateFilter("published", end, start)
-      c.SetFilterAttribute("status", "published")
 
       cur = c.Search(db.posts)
       return cur.count()

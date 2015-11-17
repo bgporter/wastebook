@@ -86,6 +86,10 @@ def ExtractTags(txt):
    return sorted(list(set([t.lower() for t in tagList])))
 
 class Post(object):
+   defaultSort = [("published", pymongo.DESCENDING)]
+
+
+
    def __init__(self, data=None):
       '''
          The Post object -- note that Pages and Posts are structurally identical
@@ -111,6 +115,7 @@ class Post(object):
       # to update their value (e.g., making sure that titles and slugs
       # are always updated together)
       self._setExceptions = {}
+      self._getExceptions = {}
       # setting the title also sets the slug
       self.AddSetException('title', self.SetTitle)
       # when we set new text, we extract tags from the body.
@@ -131,9 +136,22 @@ class Post(object):
       '''
       self._setExceptions[key] = handler
 
+   def AddGetException(self, key, handler):
+      ''' like the Set exception -- we'd like to have attibutes that are 
+         accessed as such, but require that code be excecuted like we'd 
+         be able to do in a property (e.g., the rendered output, which we only
+         want to incur the cost of generating when a post has been modified since
+         the last time it was rendered.)
+      '''
+
+      self._getExceptions[key] = handler
+
    def __getattr__(self, name):
       if not name.startswith("_"):
-         return self._data[name]
+         if name in self._getExceptions.keys():
+            return self._getExceptions[name](name)
+         else:
+            return self._data[name]
 
    def __setattr__(self, name, value):
       if name.startswith("_"):
@@ -313,6 +331,10 @@ class Post(object):
 
 
 class Page(Post):
+   defaultSort = [("slug", pymongo.ASCENDING)]
+
+
+
    ''' Pages and Posts are identical, except for the value of their 'type' 
       value in the database. See the Post @classmethod Create() for how we 
       handle this transparently.
