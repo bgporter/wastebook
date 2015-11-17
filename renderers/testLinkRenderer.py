@@ -37,4 +37,13 @@ class TestLinkRenderer(unittest.TestCase):
       self.assertEqual(lr.Render(),
          "1: [http://foo.com](http://foo.com) and [http://bar.com](http://bar.com)")
 
+   def testAlreadyMarkdown(self):
+      ''' links that are already inside of Markdown syntax should be left alone. '''
+      lr = LinkRenderer("[http://foo.com](http://foo.com)")
+      self.assertEqual(lr.Render(), "[http://foo.com](http://foo.com)")
+
+   def testAlreadyHtml(self):
+      ''' valid HTML links should be ignored. '''
+      lr = LinkRenderer('<a href="http://foo.com">Link</a>')
+      self.assertEqual(lr.Render(), '<a href="http://foo.com">Link</a>')
 
