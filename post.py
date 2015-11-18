@@ -281,12 +281,11 @@ class Post(object):
 
 
       # when we save, re-render the output text if we need to.
-      if self.edited is not None:
-         if self.rendered is None or (self.rendered < self.edited):
-            # The rendered version is obsolete. Create the rendered version, 
-            # set timestamps to reflect, and save the post back to the database.
-            self.renderedText = RenderText(self.text)
-            self.rendered = self.edited
+      if self.rendered != self.edited:
+         # The rendered version is obsolete. Create the rendered version, 
+         # set timestamps to reflect, and save the post back to the database.
+         self.renderedText = RenderText(self.text)
+         self.rendered = self.edited
 
       result = postDb.replace_one(filterDict, self._data, upsert=True)
 
