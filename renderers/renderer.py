@@ -24,6 +24,14 @@
 '''
 
 
+def PlaceholderUrlBuilder(endpoint, *pathComponents):
+   pathComponents = list(pathComponents)
+   pathComponents.insert(0, endpoint)
+   return "/".join(pathComponents)
+
+UrlBuilder = PlaceholderUrlBuilder
+
+
 class RenderBase(object):
    def __init__(self, text):
       self.text = text
@@ -44,4 +52,5 @@ class RenderBase(object):
    def PostRenderText(self):
       pass
 
-      
+ 
+

@@ -10,6 +10,8 @@ POST_DATA_1 = [
    {
       "created" :    datetime(2015, 10, 1),
       "published":   datetime(2015, 10, 1),
+      "edited":      datetime(2015, 10, 1),
+      "rendered":    None,
       "author":      "bgporter",
       "public":      True,
       "status":      "published",
@@ -22,6 +24,8 @@ POST_DATA_1 = [
    {
       "created" :    datetime(2015, 10, 2),
       "published":   datetime(2015, 10, 2),
+      "edited":      datetime(2015, 10, 1),
+      "rendered":    None,
       "author":      "bgporter",
       "public":      False,
       "status":      "published",
@@ -34,6 +38,8 @@ POST_DATA_1 = [
    {
       "created" :    datetime(2015, 10, 2),
       "published":   datetime(2015, 10, 2),
+      "edited":      datetime(2015, 10, 1),
+      "rendered":    None,
       "author":      "bgporter",
       "public":      False,
       "status":      "draft",
@@ -49,6 +55,8 @@ POST_DATA_2 = [
    {
       "created" :    datetime(2015, 3, 2),
       "published":   datetime(2015, 3, 2),
+      "edited":      datetime(2015, 10, 1),
+      "rendered":    None,
       "author":      "bgporter",
       "public":      True,
       "status":      "published",
@@ -61,6 +69,8 @@ POST_DATA_2 = [
    {
       "created" :    datetime(2015, 4, 2),
       "published":   datetime(2015, 4, 2),
+      "edited":      datetime(2015, 10, 1),
+      "rendered":    None,
       "author":      "bgporter",
       "public":      True,
       "status":      "published",
@@ -73,6 +83,8 @@ POST_DATA_2 = [
    {
       "created" :    datetime(2015, 5, 2),
       "published":   datetime(2015, 5, 2),
+      "edited":      datetime(2015, 10, 1),
+      "rendered":    None,
       "author":      "bgporter",
       "public":      True,
       "status":      "published",
@@ -85,6 +97,8 @@ POST_DATA_2 = [
    {
       "created" :    datetime(2015, 5, 2),
       "published":   datetime(2015, 5, 2),
+      "edited":      datetime(2015, 10, 1),
+      "rendered":    None,
       "author":      "bgporter",
       "public":      True,
       "status":      "published",
@@ -97,6 +111,8 @@ POST_DATA_2 = [
    {
       "created" :    datetime(2015, 6, 2),
       "published":   datetime(2015, 6, 2),
+      "edited":      datetime(2015, 10, 1),
+      "rendered":    None,
       "author":      "bgporter",
       "public":      True,
       "status":      "published",
@@ -109,6 +125,8 @@ POST_DATA_2 = [
    {
       "created" :    datetime(2015, 6, 2),
       "published":   datetime(2015, 6, 2),
+      "edited":      datetime(2015, 10, 1),
+      "rendered":    None,
       "author":      "bgporter",
       "public":      True,
       "status":      "published",
@@ -121,6 +139,8 @@ POST_DATA_2 = [
    {
       "created" :    datetime(2015, 6, 2),
       "published":   datetime(2015, 6, 2),
+      "edited":      datetime(2015, 10, 1),
+      "rendered":    None,
       "author":      "bgporter",
       "public":      True,
       "status":      "published",
@@ -133,6 +153,8 @@ POST_DATA_2 = [
    {
       "created" :    datetime(2015, 7, 2),
       "published":   datetime(2015, 7, 2),
+      "edited":      datetime(2015, 10, 1),
+      "rendered":    None,
       "author":      "bgporter",
       "public":      True,
       "status":      "published",
@@ -145,6 +167,8 @@ POST_DATA_2 = [
    {
       "created" :    datetime(2015, 8, 2),
       "published":   datetime(2015, 8, 2),
+      "edited":      datetime(2015, 10, 1),
+      "rendered":    None,
       "author":      "bgporter",
       "public":      True,
       "status":      "published",
@@ -157,6 +181,8 @@ POST_DATA_2 = [
    {
       "created" :    datetime(2015, 9, 2),
       "published":   datetime(2015, 9, 2),
+      "edited":      datetime(2015, 10, 1),
+      "rendered":    None,
       "author":      "bgporter",
       "public":      True,
       "status":      "published",
@@ -169,6 +195,8 @@ POST_DATA_2 = [
    {
       "created" :    datetime(2015, 10, 2),
       "published":   datetime(2015, 10, 2),
+      "edited":      datetime(2015, 10, 1),
+      "rendered":    None,
       "author":      "bgporter",
       "public":      True,
       "status":      "published",

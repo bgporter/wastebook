@@ -232,6 +232,7 @@ class TestPostDatabase(unittest.TestCase):
       '''
       p = post.Post.Create()
       p.title = "Duplicate Slug"
+      # p.text = 'foo'
 
       p.Save(db.posts)
       self.assertEqual(p.slug, "duplicate-slug")
@@ -298,4 +299,20 @@ class TestSearch(unittest.TestCase):
 
       cur = post.Post.Search(db.posts, {"public": True, "tags" : "foo"})
       self.assertEqual(1, cur.count())
+
+
+class TestRender(unittest.TestCase):
+   @classmethod
+   def setUpClass(cls):
+      # make sure the db is empty.
+      db.posts.drop()
+
+   def testRenderText(self):
+      p = post.Post.Create()
+      p.text = "# headline\n## subhed\n\n This is a *post*"
+      p.Save(db.posts)
+      self.assertEqual(p.renderedText, 
+      u"<h1>headline</h1>\n<h2>subhed</h2>\n<p>This is a <em>post</em></p>")
+
+
 

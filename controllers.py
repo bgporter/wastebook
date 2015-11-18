@@ -34,8 +34,6 @@ class PostController(object):
       # as published.
       self.status = "published"
 
-
-
       self.visibility = {}
       self.additionalFilters = {}
 

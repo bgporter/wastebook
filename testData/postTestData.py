@@ -10,6 +10,8 @@ SEARCH_TEST_DATA = [
    {
       "created" :    datetime(2015, 10, 1),
       "published":   datetime(2015, 10, 1),
+      "edited":      datetime(2015, 10, 1),
+      "rendered":    None,
       "author":      "bgporter",
       "public":      True,
       "status":      "published",
@@ -22,6 +24,8 @@ SEARCH_TEST_DATA = [
    {
       "created" :    datetime(2015, 10, 2),
       "published":   datetime(2015, 10, 2),
+      "edited":      datetime(2015, 10, 1),
+      "rendered":    None,
       "author":      "bgporter",
       "public":      False,
       "title":       "Second Post",
@@ -34,6 +38,8 @@ SEARCH_TEST_DATA = [
    {
       "created" :    datetime(2015, 10, 3),
       "published":   datetime(2015, 10, 3),
+      "edited":      datetime(2015, 10, 1),
+      "rendered":    None,
       "author":      "tslothrop",
       "public":      True,
       "title":       "Third Post",

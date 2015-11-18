@@ -6,9 +6,12 @@ from renderer import RenderBase
 # sure that they are listed in a sensible sequence in the PIPELINE 
 # list.
 from markdownRenderer import MarkdownRenderer
+from tagRenderer import TagRenderer
+
 
 PIPELINE = [
-   RenderBase,
+   #RenderBase,
+   TagRenderer,
 
 
    # Keep Markdown as the final render filter, since all of the preceding

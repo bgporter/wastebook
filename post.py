@@ -36,6 +36,10 @@ import string
 import unicodedata
 import urllib
 
+
+from renderers import RenderText
+
+
 from bson.objectid import ObjectId
 
 REPLACE_PUNCTUATION = re.compile(r"[{}]".format(string.punctuation))
@@ -125,6 +129,9 @@ class Post(object):
       self.AddSetException('published', self.SetDate)
       self.AddSetException('modified', self.SetDate)
       self.AddSetException('rendered', self.SetDate)
+
+      ## and the get exceptions:
+      self.AddGetException('renderedText', self.GetRenderedText)
 
    def AddSetException(self, key, handler):
       ''' some attributes need extra logic applied to them before sticking them
@@ -272,6 +279,15 @@ class Post(object):
             self.slug = "{0}-{1}".format(self.slug, lastNum+1)
             self._slugChanged = False
 
+
+      # when we save, re-render the output text if we need to.
+      if self.edited is not None:
+         if self.rendered is None or (self.rendered < self.edited):
+            # The rendered version is obsolete. Create the rendered version, 
+            # set timestamps to reflect, and save the post back to the database.
+            self.renderedText = RenderText(self.text)
+            self.rendered = self.edited
+
       result = postDb.replace_one(filterDict, self._data, upsert=True)
 
       if redirectDict is not None:
@@ -325,6 +341,16 @@ class Post(object):
       '''
       self._data[key] = max(timestamp, self.created)
 
+
+   def GetRenderedText(self, key):
+      ''' return the rendered version of this post, generating it 
+         if that's necessary...
+      '''
+
+
+         # self.Save()
+
+      return self._data['renderedText']
 
 
 
