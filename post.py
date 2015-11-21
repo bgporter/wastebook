@@ -131,7 +131,7 @@ class Post(object):
       self.AddSetException('rendered', self.SetDate)
 
       ## and the get exceptions:
-      self.AddGetException('renderedText', self.GetRenderedText)
+      # self.AddGetException('renderedText', self.GetRenderedText)
 
    def AddSetException(self, key, handler):
       ''' some attributes need extra logic applied to them before sticking them
@@ -339,19 +339,6 @@ class Post(object):
          have e.g., modified < created. 
       '''
       self._data[key] = max(timestamp, self.created)
-
-
-   def GetRenderedText(self, key):
-      ''' return the rendered version of this post, generating it 
-         if that's necessary...
-      '''
-
-
-         # self.Save()
-
-      return self._data['renderedText']
-
-
 
 
 
