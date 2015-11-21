@@ -12,6 +12,9 @@ class TagRenderer(renderer.RenderBase):
 
       [#tag](http://link.to.tag)
 
+      Uses the UrlBuilder function handler as set in the renderer module. If that's 
+      not set, it will use a default function that's used in testing.
+
    '''
 
    def RenderText(self):

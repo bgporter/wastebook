@@ -32,6 +32,10 @@ def PlaceholderUrlBuilder(endpoint, *pathComponents):
 UrlBuilder = PlaceholderUrlBuilder
 
 
+def SetUrlBuilder(builder):
+   UrlBuilder = builder
+
+
 class RenderBase(object):
    '''
       Base class that defines the API used in the wastebook to perform multi-stage 
