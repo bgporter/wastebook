@@ -48,6 +48,7 @@ import datetime
 
 # model code
 import post
+from post import Post
 import user
 import controllers
 
@@ -72,7 +73,6 @@ loginManager.init_app(app)
 RightNow = datetime.datetime.now
 
 
-FIX_PATTERN = re.compile(r'FIX_URL\((.+?)\)')
 
 def FixUrl(text):
 
@@ -99,8 +99,12 @@ def index():
    ''' main index page showing posts. '''
    return posts(1)
 
+### Let's do all of the 'posts' things first. 
+
 @app.route("/posts/<int:pageNum>/")
 def posts(pageNum=1):
+   # note that page num can't be less than 1. 
+   pageNum = max(1, pageNum)
    c = controllers.PostController(current_user)
    c.DateFilter("published", RightNow())
    c.SetPagination(pageNum-1, config.POSTS_PER_PAGE)
@@ -109,6 +113,15 @@ def posts(pageNum=1):
    cursor = c.Search(postDb)
 
    return "\n".join(str(p) for p in cursor)
+
+@app.route("/post/<idOrSlug>")
+def post(idOrSlug):
+   thePost = Post.Load(postDb, idOrSlug)
+   if thePost:
+      return thePost
+   else: 
+      abort(404)
+
 
 if __name__ == "__main__":
    app.run()

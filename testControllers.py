@@ -56,19 +56,19 @@ class TestIndex(unittest.TestCase):
    def testOldPosts(self):
       controllers.RightNow = lambda: datetime(2016, 1, 1)
       user1 = FakeUser("", False)
-      c = controllers.PostController(user1)
+      c = controllers.PostController(user1, db.posts)
       c.DateFilter("published", datetime(2016, 1, 1))
-      cur = c.Search(db.posts)
+      cur = c.Search()
 
       self.assertEqual(1, cur.count())
       self.assertEqual(False, c.moreResults) 
 
 
       user2 = FakeUser('bgporter', True)
-      c = controllers.PostController(user2)
+      c = controllers.PostController(user2, db.posts)
       c.DateFilter("published", datetime(2016, 1, 1))
 
-      cur = c.Search(db.posts)
+      cur = c.Search()
       self.assertEqual(2, cur.count())
       self.assertEqual(False, c.moreResults) 
 
@@ -76,9 +76,9 @@ class TestIndex(unittest.TestCase):
       # posts with a publication date in the future can't be gotten.
       user1 = FakeUser("", False)
 
-      c = controllers.PostController(user1)
+      c = controllers.PostController(user1, db.posts)
       c.DateFilter("published", datetime(2015, 1, 1))
-      cur = c.Search(db.posts)
+      cur = c.Search()
 
       self.assertEqual(0, cur.count())
       self.assertEqual(False, c.moreResults) 
@@ -86,9 +86,9 @@ class TestIndex(unittest.TestCase):
 
       # ...even if we're the authenticated owner.
       user2 = FakeUser('bgporter', True)
-      c = controllers.PostController(user2)
+      c = controllers.PostController(user2, db.posts)
       c.DateFilter("published", datetime(2015, 1, 1))
-      cur = c.Search(db.posts)
+      cur = c.Search()
 
       self.assertEqual(0, cur.count())
       self.assertEqual(False, c.moreResults) 
@@ -96,11 +96,11 @@ class TestIndex(unittest.TestCase):
    def testSearchTags(self):
       user1 = FakeUser("", False)
 
-      c = controllers.PostController(user1)
+      c = controllers.PostController(user1, db.posts)
       c.DateFilter("published", datetime(2016, 1, 1))
       c.SetFilterAttribute("tags", "foo")
 
-      cur = c.Search(db.posts)
+      cur = c.Search()
 
       self.assertEqual(1, cur.count())      
 
@@ -117,22 +117,22 @@ class TestPagination(unittest.TestCase):
 
    def testMore(self):
       user1 = FakeUser("", False)
-      c = controllers.PostController(user1)      
+      c = controllers.PostController(user1, db.posts)      
       c.DateFilter("published", datetime(2016, 1, 1))
       c.SetPagination(0, 5)
-      cur = c.Search(db.posts)
+      cur = c.Search()
 
       self.assertEqual(5, cur.count(True))
       self.assertEqual(True, c.moreResults) 
 
       c.SetPagination(1, 5)
-      cur = c.Search(db.posts)
+      cur = c.Search()
 
       self.assertEqual(5, cur.count(True))
       self.assertEqual(True, c.moreResults) 
 
       c.SetPagination(2, 5)
-      cur = c.Search(db.posts)
+      cur = c.Search()
 
       self.assertEqual(1, cur.count(True))
       self.assertEqual(False, c.moreResults) 
@@ -150,12 +150,12 @@ class TestDateRange(unittest.TestCase):
 
    def MonthSearch(self, year, month):
       user1 = FakeUser("", False)
-      c = controllers.PostController(user1)      
+      c = controllers.PostController(user1, db.posts)      
       start = datetime(year, month, 1)
       end = (start + timedelta(days=31)).replace(day=1)
       c.DateFilter("published", end, start)
 
-      cur = c.Search(db.posts)
+      cur = c.Search()
       return cur.count()
 
    def test_MonthRange(self):

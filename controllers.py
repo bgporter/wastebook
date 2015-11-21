@@ -18,7 +18,7 @@ RightNow = datetime.datetime.now
 class PostController(object):
    dataType = post.Post
 
-   def __init__(self, user):
+   def __init__(self, user, db):
       self.filterDict = {}
       # after we run a query, this will be either True or False.
       self.moreResults = None
@@ -38,6 +38,7 @@ class PostController(object):
       self.additionalFilters = {}
 
       self.SetUser(user)
+      self.db = db
 
 
    def SetUser(self, user):
@@ -73,7 +74,7 @@ class PostController(object):
       self.afterDate = afterDate
 
 
-   def Search(self, db):
+   def Search(self):
       # build a filter Dict from our attributes.
       filterDict = {}
 
@@ -95,7 +96,7 @@ class PostController(object):
       # that we've been given.
       filterDict.update(self.additionalFilters)
 
-      cur = self.dataType.Search(db, 
+      cur = self.dataType.Search(self.db, 
          filterDict, 
          self.skip, 
          self.limit, 
