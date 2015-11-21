@@ -111,6 +111,13 @@ Just a flat table that saves
 **/preview/<pageOrPost>/<pageId>** -- if you're logged in, view the latest draft of the specified post (or page). The `pageOrPost` path fragment should be either the literal word 'page' or 'post', else 401.
 
 
+### Someday
+
+- accept scrobbled tracks?
+- post by email?
+
+
+
 ## Plugins/Processors
 
 Markdown does the bulk of the heavy lifting going from user input to rendered HTML output, but we need to do other kinds of rendering:
