@@ -163,3 +163,76 @@ class TestDateRange(unittest.TestCase):
       self.assertEqual(3, self.MonthSearch(2015, 6))
       self.assertEqual(2, self.MonthSearch(2015, 5))
 
+
+class TestPostLoad(unittest.TestCase):
+   ''' under normal cisrumstances, we should only be able to 
+      load posts that:
+      1. Have been published.
+      2. We have permission to see (either public, or private and we 
+         have rights to see it)
+   '''
+   @classmethod
+   def setUpClass(cls):
+      db.posts.drop()
+      CreatePosts(db.posts, POST_DATA_1)
+
+   @classmethod
+   def tearDownClass(cls):
+      db.posts.drop()
+
+
+   def setUp(self):
+      self.anonymous = FakeUser('', False)
+      self.loggedIn = FakeUser('bgporter', True)
+
+   def test_PostNotFound(self):
+      pass
+
+   def test_PublicPublishedPost(self):
+      '''
+      ''' 
+      c = controllers.PostController(self.anonymous, db.posts)
+      thePost = c.Load('first-post')
+      self.assertIsNot(thePost, None)
+
+      c = controllers.PostController(self.loggedIn, db.posts) 
+      thePost = c.Load('first-post')
+      self.assertIsNot(thePost, None)
+
+   def test_PublicUnpublishedPost(self):
+      c = controllers.PostController(self.anonymous, db.posts)
+      # published, but in the future
+      c.DateFilter("published", datetime(2015, 1, 1))
+      thePost = c.Load('first-post')
+      self.assertIs(thePost, None)
+      
+      # date is okay, status is not
+      c.DateFilter("published", datetime(2016, 1, 1))
+      thePost = c.Load('fourth-post')
+      self.assertIs(thePost, None)
+
+      # even if I'm logged in, I shouldn't have a draft post 
+      # show up on the main page.
+      c = controllers.PostController(self.loggedIn, db.posts) 
+      c.DateFilter("published", datetime(2016, 1, 1))
+      thePost = c.Load('fourth-post')
+      self.assertIs(thePost, None)
+
+   def test_PrivatePublishedPost(self):
+      c = controllers.PostController(self.anonymous, db.posts)
+      c.DateFilter("published", datetime(2016, 1, 1))
+      thePost = c.Load("second-post")
+      self.assertIs(thePost, None)
+
+      c = controllers.PostController(self.loggedIn, db.posts)
+      c.DateFilter("published", datetime(2016, 1, 1))
+      thePost = c.Load("second-post")
+      self.assertIsNot(thePost, None)
+
+
+   def test_PrivateUnpublishedPost(self):
+      pass
+
+
+
+

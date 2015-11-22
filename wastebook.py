@@ -105,12 +105,12 @@ def index():
 def posts(pageNum=1):
    # note that page num can't be less than 1. 
    pageNum = max(1, pageNum)
-   c = controllers.PostController(current_user)
+   c = controllers.PostController(current_user, postDb)
    c.DateFilter("published", RightNow())
    c.SetPagination(pageNum-1, config.POSTS_PER_PAGE)
    c.SetFilterAttribute("status", "published")
 
-   cursor = c.Search(postDb)
+   cursor = c.Search()
 
    return "\n".join(str(p) for p in cursor)
 

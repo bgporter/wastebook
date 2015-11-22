@@ -186,13 +186,16 @@ class Post(object):
       return o.__class__.__name__
 
    @classmethod
-   def Load(cls, postDb, slugOrId):
+   def Load(cls, postDb, slugOrId, filterDict=None):
       '''
          Retrieve a single page or post from the database, using either its
          slug or objectId as the key. Returns a Post/Page object on success, 
          None if not found.
       '''
       theType = cls.TypeName()
+
+      if filterDict is None:
+         filterDict = {}
 
       thePost = None
       # if we're being passed an object ID, it will be a 24-char long string
@@ -201,7 +204,9 @@ class Post(object):
          try:
             int(slugOrId, 16)
             # if we get here, we didn't throw an error. 
-            thePost = postDb.find_one({"_id": ObjectId(slugOrId)})
+            searchDict = {"_id": ObjectId(slugOrId)}
+            searchDict.update(filterDict)
+            thePost = postDb.find_one(searchDict)
          except ValueError:
             pass
       if thePost is None:
@@ -209,6 +214,7 @@ class Post(object):
             "type" : theType,
             "slug":  slugOrId
          }
+         searchDict.update(filterDict)
          thePost = postDb.find_one(searchDict)
 
       retval = None

@@ -73,11 +73,8 @@ class PostController(object):
       self.beforeDate = beforeDate
       self.afterDate = afterDate
 
-
-   def Search(self):
-      # build a filter Dict from our attributes.
+   def BuildFilter(self):
       filterDict = {}
-
       # what can this user see?
       if self.visibility:
          filterDict.update(self.visibility)
@@ -95,6 +92,22 @@ class PostController(object):
       # ...and don't forget to add any additional filter settings
       # that we've been given.
       filterDict.update(self.additionalFilters)
+      return filterDict
+
+
+   def Load(self, slugOrId):
+      # Remember that loading posts needs to take visibilty into account:
+      # 1. Public posts still need an appropriate publication state and date
+      # 2. Private posts need to be restricted to the currently logged-in user.
+      filterDict = self.BuildFilter()
+      thePost = self.dataType.Load(self.db, slugOrId, filterDict)
+
+      return thePost
+
+
+   def Search(self):
+      # build a filter Dict from our attributes.
+      filterDict = self.BuildFilter()
 
       cur = self.dataType.Search(self.db, 
          filterDict, 

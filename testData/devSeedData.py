@@ -49,6 +49,20 @@ POST_DATA_1 = [
       "tags":        [],
       "type":        "Post"
    },
+   {
+      "created" :    datetime(2015, 10, 2),
+      "published":   datetime(2015, 10, 2),
+      "edited":      datetime(2015, 10, 1),
+      "rendered":    None,
+      "author":      "bgporter",
+      "public":      True,
+      "status":      "draft",
+      "title":       "Fourth Post",
+      "slug":        "",
+      "text":        "This is a #draft #post",
+      "tags":        [],
+      "type":        "Post"
+   },   
 ]
 
 POST_DATA_2 = [
