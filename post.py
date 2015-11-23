@@ -77,7 +77,9 @@ def ExtractTags(txt):
    ''' given input text, look for #tag instances in it, and return a list 
       of those tags without the leading '#'. If there are no tags, we return
       an empty list.
-      Tags must start with an alphanumeric, and can contain dashes and underscores.
+
+      Tags must start and end with an alphanumeric, and can contain dashes 
+      and underscores.
 
       Before returning the list, we:
       - remove dupes
@@ -90,24 +92,25 @@ def ExtractTags(txt):
    return sorted(list(set([t.lower() for t in tagList])))
 
 class Post(object):
+   '''
+      The Post object -- note that Pages and Posts are structurally identical
+      (at least to start out with), and differ only in their type name, which is 
+      also used to separate them in the database. 
+   '''
    defaultSort = [("published", pymongo.DESCENDING)]
 
 
 
    def __init__(self, data=None):
       '''
-         The Post object -- note that Pages and Posts are structurally identical
-         (at least to start out with), and differ only in their type name, which is 
-         also used to separate them in the database. 
-
          When we create a Post/Page, we initialize it with a dict that is either 
          a copy of the template post (above) or has been fetched from the database.
 
          We use a getattr/setattr hack here: actual member variables are always
          prefixed with an underscore, and the values that need to go into the 
          database are not underscore-prefixed. 
-
       '''
+      
       if data is None:
          data = {}
       # The post/page data is held in a separate dict, not the object's 
