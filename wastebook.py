@@ -116,11 +116,37 @@ def posts(pageNum=1):
 
 @app.route("/post/<idOrSlug>")
 def post(idOrSlug):
-   thePost = Post.Load(postDb, idOrSlug)
+   c = controllers.PostController(current_user, postDb)
+   thePost = c.Load(idOrSlug)
    if thePost:
-      return thePost
+      return thePost.text
    else: 
       abort(404)
+
+
+@app.route("/tag/<tagName>")
+@app.route("/tag/<tagName>/<int:pageNum>")
+def tagged(tagName, pageNum=1):
+   ''' for now, we'll just search for posts, but the eventual implementation of this needs to:
+      1. Look for a page with a slug matching this tagName
+      2. look for posts with that tag.
+      3. Look for pages with that tag. 
+
+      If(1), display the contents of that page,
+      if 2, display brief reprs of those posts
+      if 3, display brief reprs of those pages.
+   '''
+
+   postController = controllers.PostController(current_user, postDb)
+   postController.DateFilter("published", RightNow())
+   postController.SetFilterAttribute("tags", tagName)
+   postController.SetPagination(pageNum-1, config.POSTS_PER_PAGE)
+
+   postCursor = postController.Search()
+   return "\n".join(str(p) for p in postCursor)
+
+
+
 
 
 if __name__ == "__main__":
