@@ -81,22 +81,17 @@ Just a flat table that saves
 
 **/posts/<int:pageNum>** -- if no argument provided, identical to the index. Otherwise, attempts to display that page # of posts. Number of pages per post will need to be a configuration option.
 
+**/post/<postId>** -- display just the specified post. `postId` should be either the slug value of the post or the database ID. 
+
+**/edit/post/<postId>** (GET/POST) Edit a post. If this is a brand new post that hasn't been published, we need to use the database ID. 
+
+**/tag/<tagName>** -- display pages/posts with the specified tag. If there is a page that's also named `tagName`, display its contents before the list of tagged things.
+
 **/pages/<int:pageNum>** -- display a page-worth of links to pages. 
-
-
-
-
-**/post/<postId>** -- display just the specified post. `postId` should be either the slug value of the post or the database ID. 
-
-**/post/<postId>** -- display just the specified post. `postId` should be either the slug value of the post or the database ID. 
 
 
 **/page/<pageId>** -- display just the specified page. `pageId` should be either the slug value of the page or the database ID. 
 
-
-**/tag/<tagName>** -- display pages/posts with the specified tag. If there is a page that's also named `tagName`, display its contents before the list of tagged things.
-
-**/edit/post/<postId>** (GET/POST) Edit a post. If this is a brand new post that hasn't been published, we need to use the database ID. 
 
 **/edit/page/<pageId>** (GET/POST) Edit a page.
 
