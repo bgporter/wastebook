@@ -74,21 +74,6 @@ RightNow = datetime.datetime.now
 
 
 
-def FixUrl(text):
-
-   def DoFix(matchObj):
-      fields = matchObj.group(0)
-      fields = [f.strip() for f in fields.split(',')]
-      linkText = fields[0]
-      endPoint = fields[1]
-      path = fields[2:]
-
-      return '<a href="{0}">{1}</a>'.format(url_for(endPoint, *path), linkText)
-
-   return FIX_PATTERN.sub(DoFix, text)
-
-
-
 @loginManager.user_loader
 def loadUser(userId):
    return user.loadUser(db, userId)
