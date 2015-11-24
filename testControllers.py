@@ -186,7 +186,10 @@ class TestPostLoad(unittest.TestCase):
       self.loggedIn = FakeUser('bgporter', True)
 
    def test_PostNotFound(self):
-      pass
+      c = controllers.PostController(self.anonymous, db.posts)
+      thePost = c.Load('non-existent-post')
+      self.assertIs(thePost, None)
+      
 
    def test_PublicPublishedPost(self):
       '''
@@ -231,8 +234,15 @@ class TestPostLoad(unittest.TestCase):
 
 
    def test_PrivateUnpublishedPost(self):
-      pass
+      c = controllers.PostController(self.anonymous, db.posts)
+      c.DateFilter("published", datetime(2015, 1, 1))
+      thePost = c.Load("second-post")
+      self.assertIs(thePost, None)
 
+      c = controllers.PostController(self.loggedIn, db.posts)
+      c.DateFilter("published", datetime(2015, 1, 1))
+      thePost = c.Load("second-post")
+      self.assertIs(thePost, None)
 
 
 
